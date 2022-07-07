@@ -1,0 +1,9 @@
+{
+  "npmClient": "pnpm",
+  "packages": [
+    "backends",
+    "frontends"
+  ],
+  "useNx": false,
+  "version": "0.0.0"
+}
