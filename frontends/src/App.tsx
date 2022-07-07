@@ -39,7 +39,14 @@ function App() {
       body: formdata,
     }
 
-    fetch('http://localhost:8000/v8', requestOptions)
+    let url = 'http://localhost:8000/v8'
+    let location = window.location.href
+    // console.log(`location`, location)
+    if (location.includes('gitpod.io')) {
+      url = location.replace('3000', '8000') + 'v8'
+    }
+    console.log(url)
+    fetch(url, requestOptions)
       .then((response) => response.text())
       .then((result) => {
         let out = JSON.parse(result).stdout
@@ -48,7 +55,7 @@ function App() {
       .catch((error) => console.log('error', error))
   }
 
-  const debouncedChangeHandler = useMemo(() => debounce(getRes, 2500), [getRes])
+  const debouncedChangeHandler = useMemo(() => debounce(getRes, 500), [getRes])
 
   useEffect(() => {
     getRes()
