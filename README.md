@@ -7,6 +7,9 @@ You need v8 in your path, you can do similar like
 ```
 npm i -g npm-check-updates esvu && yes | esvu
 ```
+Or you can build v8 yourself. (see ref link if you want to setup v8 build env in one click)
+
+Also add `~/.esvu/bin` to your path.
 
 ## Setup
 ```bash
@@ -18,3 +21,6 @@ Frontend default port is http://localhost:3000
 
 ## Todo
 sandbox for engine execute script.
+
+## Ref
+* https://github.com/gengjiawen/v8-build
