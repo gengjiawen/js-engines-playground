@@ -1,8 +1,8 @@
 {
   "npmClient": "pnpm",
   "packages": [
-    "backends",
-    "frontends"
+    "backend",
+    "frontend"
   ],
   "useNx": false,
   "version": "0.0.0"

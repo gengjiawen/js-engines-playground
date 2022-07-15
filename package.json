@@ -5,8 +5,8 @@
   "main": "index.js",
   "private": true,
   "workspaces": [
-    "backends",
-    "frontends"
+    "backend",
+    "frontend"
   ],
   "scripts": {
     "dev": "lerna run dev --stream --parallel",
