@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "dev": "lerna run dev --stream --parallel",
+    "build": "lerna run build --stream --parallel",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
