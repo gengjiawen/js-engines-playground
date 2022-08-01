@@ -23,9 +23,15 @@ pnpm dev
 Frontend default port is http://localhost:3000
 
 You can also use prebuild docker, 
-```console
-docker run -it --name js-engines -p8001:8000 gengjiawen/js-engines
+```bash
+docker run --rm -it --name js-engines -p8001:8000 gengjiawen/js-engines
 ```
+
+or long running docker service:
+```console
+docker run -d --restart=always --name js-engines -p8001:8000 gengjiawen/js-engines:latest
+```
+
 ## Todo
 sandbox for engine execute script.
 
