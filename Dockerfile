@@ -1,5 +1,8 @@
-FROM node:lts-alpine as fe
+FROM node:lts as fe
 RUN npm i -g pnpm 
+# ignore some engines install error
+RUN npm i -g esvu && yes | esvu || true
+
 WORKDIR /app
 
 COPY package.json /app
@@ -14,5 +17,9 @@ COPY ./ /app/
 RUN pnpm build
 
 RUN cp -r /app/frontend/dist/ /app/backend/build/
+ENV PATH=/root/.esvu/bin:${PATH}
+RUN which v8
 
 CMD ["node", "/app/backend/build/index.js"]
+
+EXPOSE 8000
