@@ -41,6 +41,10 @@ function App() {
 
     let url = 'http://localhost:8000/v8'
     let location = window.location.href
+    let prod = import.meta.env.PROD
+    if (prod) {
+      url = '/v8'
+    }
     // console.log(`location`, location)
     if (location.includes('gitpod.io')) {
       url = location.replace('3000', '8000') + 'v8'
