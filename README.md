@@ -24,7 +24,7 @@ Frontend default port is http://localhost:3000
 
 You can also use prebuild docker, 
 ```console
-docker  run -it --name js-engines -p8001:8000 gejingjiawen/js-engines
+docker run -it --name js-engines -p8001:8000 gengjiawen/js-engines
 ```
 ## Todo
 sandbox for engine execute script.
