@@ -4,6 +4,7 @@ import * as cors from '@koa/cors'
 import * as bodyParser from 'koa-body'
 import * as fs from "fs/promises";
 import { execute } from "./v8";
+import * as path from 'path';
 
 const app = new Koa()
 
@@ -13,9 +14,18 @@ app.use(bodyParser({
 app.use(require('koa-compress')())
 const router = new Router()
 
-router.get('/', async (ctx: Koa.Context) => {
-    ctx.body = 'Hello world'
-})
+const fe = path.join(__dirname, 'dist')
+const serve = require('koa-static')
+app.use(serve(fe))
+
+// in case of public download
+// const mount = require('koa-mount')
+// app.use(mount('/public', serve(fileDownloadLocation)))
+
+
+// router.get('/', async (ctx: Koa.Context) => {
+//     ctx.body = 'Hello world'
+// })
 
 router.post('/v8', async (ctx: Koa.Context) => {
     const { js_code, flags } = ctx.request.body
