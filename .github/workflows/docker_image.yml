@@ -21,10 +21,14 @@ jobs:
         with:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
+      - name: Generate docker date tag
+        id: evaluate-js
+        run: |
+            echo "::set-output name=result::$(node -p 'let now = new Date();let t = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;t')"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest, ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ steps.evaluate-js.outputs.result }}
