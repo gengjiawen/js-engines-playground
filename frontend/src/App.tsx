@@ -1,12 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  Grid,
-  GridItem,
-  HStack,
-  Input,
-  Text,
-  useFocusEffect,
-} from '@chakra-ui/react'
 import { Editor } from './Editor'
 import debounce from 'lodash.debounce'
 
@@ -66,19 +58,30 @@ function App() {
   }, [])
 
   return (
-    <Grid templateColumns="repeat(2, 1fr)" height="100vh" gap={6}>
-      <Editor onChange={editorOnchange} code={editor_value} />
-      <GridItem w="100%" h="50%">
-        <HStack>
-          <Text>Flags:</Text>
-          <Input value={flag_value} onChange={flagsOnChange} />
-        </HStack>
-        <Editor
-          code={compiler_out}
-          extra={{ readOnly: true, editable: false }}
-        />
-      </GridItem>
-    </Grid>
+      <div className="flex h-screen">
+        <div className="w-1/2">
+          <Editor onChange={editorOnchange} code={editor_value} />
+        </div>
+        <div className="w-1/2">
+          <label htmlFor="flags" className="block text-sm font-medium text-gray-700">
+            Flags
+          </label>
+          <div className="mt-1">
+            <input
+                id="flags"
+                name="flags"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                value={flag_value}
+                onChange={flagsOnChange}
+            />
+          </div>
+
+          <Editor
+              code={compiler_out}
+              extra={{ readOnly: true, editable: false }}
+          />
+        </div>
+      </div>
   )
 }
 

@@ -22,11 +22,6 @@ app.use(serve(fe))
 // const mount = require('koa-mount')
 // app.use(mount('/public', serve(fileDownloadLocation)))
 
-
-// router.get('/', async (ctx: Koa.Context) => {
-//     ctx.body = 'Hello world'
-// })
-
 router.post('/v8', async (ctx: Koa.Context) => {
     const { js_code, flags } = ctx.request.body
     const { temporaryFile } = await import(`tempy`)
