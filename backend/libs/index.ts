@@ -1,14 +1,14 @@
 import * as Koa from 'koa'
 import * as Router from '@koa/router'
 import * as cors from '@koa/cors'
-import * as bodyParser from 'koa-body'
+import { koaBody } from 'koa-body'
 import * as fs from "fs/promises";
 import { execute } from "./v8";
 import * as path from 'path';
 
 const app = new Koa()
 
-app.use(bodyParser({
+app.use(koaBody({
     multipart: true,
 }))
 app.use(require('koa-compress')())
