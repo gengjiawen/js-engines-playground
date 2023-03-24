@@ -24,7 +24,7 @@ jobs:
       - name: Generate docker date tag
         id: evaluate-js
         run: |
-            echo "::set-output name=result::$(node -p 'let now = new Date();let t = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;t')"
+          echo "::set-output name=result::$(node -p 'let now = new Date();let t = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;t')"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4

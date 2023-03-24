@@ -2,15 +2,17 @@ import * as Koa from 'koa'
 import * as Router from '@koa/router'
 import * as cors from '@koa/cors'
 import { koaBody } from 'koa-body'
-import * as fs from "fs/promises";
-import { execute } from "./v8";
-import * as path from 'path';
+import * as fs from 'fs/promises'
+import { execute } from './v8'
+import * as path from 'path'
 
 const app = new Koa()
 
-app.use(koaBody({
+app.use(
+  koaBody({
     multipart: true,
-}))
+  })
+)
 app.use(require('koa-compress')())
 const router = new Router()
 
@@ -23,15 +25,15 @@ app.use(serve(fe))
 // app.use(mount('/public', serve(fileDownloadLocation)))
 
 router.post('/v8', async (ctx: Koa.Context) => {
-    const { js_code, flags } = ctx.request.body
-    const { temporaryFile } = await import(`tempy`)
-    const f = temporaryFile({ extension: '.js' })
-    await fs.writeFile(f, js_code)
-    const r = await execute(f, flags)
-    ctx.body = {
-        code: r.exitCode,
-        stdout: r.stdout,
-    }
+  const { js_code, flags } = ctx.request.body
+  const { temporaryFile } = await import(`tempy`)
+  const f = temporaryFile({ extension: '.js' })
+  await fs.writeFile(f, js_code)
+  const r = await execute(f, flags)
+  ctx.body = {
+    code: r.exitCode,
+    stdout: r.stdout,
+  }
 })
 
 app.use(cors())
@@ -39,5 +41,5 @@ app.use(router.routes()).use(router.allowedMethods())
 
 const port = 8000
 app.listen(port, () => {
-    console.log(`server running http://localhost:${port}`)
+  console.log(`server running http://localhost:${port}`)
 })
