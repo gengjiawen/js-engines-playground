@@ -60,7 +60,7 @@ export function ExecuteEnginePage() {
         <Editor code={editor_value} onChange={editorOnchange} />
       </div>
       <div className="w-1/2">
-        <ExecuteBox title={"V8 result"} content={v8_output} />
+        <ExecuteBox title={'V8 result'} content={v8_output} />
         <div className="border-b-2 border-gray-300 my-4"></div>
         <ExecuteBox title={'Quickjs result'} content={quickjs_output} />
       </div>

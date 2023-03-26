@@ -25,41 +25,41 @@ app.use(serve(fe))
 // app.use(mount('/public', serve(fileDownloadLocation)))
 
 router.post('/v8', async (ctx: Koa.Context) => {
-  const { js_code, flags } = ctx.request.body;
-  const { temporaryFile } = await import(`tempy`);
-  const f = temporaryFile({ extension: ".js" });
-  await fs.writeFile(f, js_code);
+  const { js_code, flags } = ctx.request.body
+  const { temporaryFile } = await import(`tempy`)
+  const f = temporaryFile({ extension: '.js' })
+  await fs.writeFile(f, js_code)
   try {
-    const r = await execute_v8(f, flags);
+    const r = await execute_v8(f, flags)
     ctx.body = {
       code: r.exitCode,
-      stdout: r.stdout
-    };
+      stdout: r.stdout,
+    }
   } catch (e: any) {
-    console.log("v8", e);
+    console.log('v8', e)
     ctx.body = {
       code: 1,
-      stdout: (e?.stderr + e?.stdout) ?? e.toString()
-    };
+      stdout: e?.stderr + e?.stdout ?? e.toString(),
+    }
   }
 })
 
 router.post('/quickjs', async (ctx: Koa.Context) => {
-  const { js_code } = ctx.request.body;
-  const { temporaryFile } = await import(`tempy`);
-  const f = temporaryFile({ extension: ".js" });
-  await fs.writeFile(f, js_code);
+  const { js_code } = ctx.request.body
+  const { temporaryFile } = await import(`tempy`)
+  const f = temporaryFile({ extension: '.js' })
+  await fs.writeFile(f, js_code)
   try {
-    const r = await execute_quickjs(f);
+    const r = await execute_quickjs(f)
     ctx.body = {
       code: r.exitCode,
-      stdout: r.stdout
-    };
+      stdout: r.stdout,
+    }
   } catch (e: any) {
     ctx.body = {
       code: 1,
-      stdout: e?.stderr ?? e.toString()
-    };
+      stdout: e?.stderr ?? e.toString(),
+    }
   }
 })
 
