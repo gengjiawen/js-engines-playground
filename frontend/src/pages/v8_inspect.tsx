@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import debounce from 'lodash.debounce'
 import { Editor } from '../Editor'
+import { getUrl } from '../utils/url_utils'
 
 export function V8_INSPECT_PAGE() {
   let code = `function add(a, b) { \n return a + b; \n}\n`
@@ -21,7 +22,7 @@ export function V8_INSPECT_PAGE() {
 
   let [compiler_out, setCompilerout] = useState('')
   const getRes = () => {
-    console.warn(`submmit code to server`, editor_value)
+    console.warn(`submit code to server`, editor_value)
     let formdata = new FormData()
     formdata.append('js_code', editor_value)
     formdata.append('flags', flag_value)
@@ -31,16 +32,7 @@ export function V8_INSPECT_PAGE() {
       body: formdata,
     }
 
-    let url = 'http://localhost:8000/v8'
-    let location = window.location.href
-    let prod = import.meta.env.PROD
-    if (prod) {
-      url = '/v8'
-    }
-    // console.log(`location`, location)
-    if (location.includes('gitpod.io')) {
-      url = location.replace('3000', '8000') + 'v8'
-    }
+    const url = getUrl('v8')
     console.log(url)
     fetch(url, requestOptions)
       .then((response) => response.text())

@@ -3,7 +3,7 @@ import * as Router from '@koa/router'
 import * as cors from '@koa/cors'
 import { koaBody } from 'koa-body'
 import * as fs from 'fs/promises'
-import { execute } from './v8'
+import { execute_quickjs, execute_v8 } from './engine_utils'
 import * as path from 'path'
 
 const app = new Koa()
@@ -29,7 +29,19 @@ router.post('/v8', async (ctx: Koa.Context) => {
   const { temporaryFile } = await import(`tempy`)
   const f = temporaryFile({ extension: '.js' })
   await fs.writeFile(f, js_code)
-  const r = await execute(f, flags)
+  const r = await execute_v8(f, flags)
+  ctx.body = {
+    code: r.exitCode,
+    stdout: r.stdout,
+  }
+})
+
+router.post('/quickjs', async (ctx: Koa.Context) => {
+  const { js_code } = ctx.request.body
+  const { temporaryFile } = await import(`tempy`)
+  const f = temporaryFile({ extension: '.js' })
+  await fs.writeFile(f, js_code)
+  const r = await execute_quickjs(f)
   ctx.body = {
     code: r.exitCode,
     stdout: r.stdout,

@@ -1,14 +1,7 @@
-import React, { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import {
-  Routes,
-  Route,
-  Router,
-  Outlet,
-  Link,
-  useLocation,
-} from 'react-router-dom'
+import React from 'react'
+import { Disclosure } from '@headlessui/react'
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { V8_INSPECT_PAGE } from './pages/v8_inspect'
 import { ExecuteEnginePage } from './pages/execute_engine'
 
@@ -23,7 +16,6 @@ function classNames(...classes: any) {
 
 export default function App() {
   let l = useLocation()
-  console.log(l)
   navigation = navigation.map((item) => {
     item.current = l.pathname === item.href
     return item
