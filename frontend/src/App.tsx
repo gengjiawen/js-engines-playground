@@ -24,7 +24,10 @@ export default function App() {
   return (
     <>
       <div className="min-h-full">
-        <Disclosure as="nav" className="border-b border-gray-200 bg-white">
+        <Disclosure
+          as="nav"
+          className="border-b border-gray-200 bg-white"
+        >
           {({ open }) => (
             <>
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -108,13 +111,22 @@ export default function App() {
         <div>
           <Routes>
             <Route path="/">
-              <Route index element={<ExecuteEnginePage />} />
-              <Route path="v8" element={<V8_INSPECT_PAGE />} />
+              <Route
+                index
+                element={<ExecuteEnginePage />}
+              />
+              <Route
+                path="v8"
+                element={<V8_INSPECT_PAGE />}
+              />
 
               {/* Using path="*"" means "match anything", so this route
                 acts like a catch-all for URLs that we don't have explicit
                 routes for. */}
-              <Route path="*" element={<h2> Nothing to see </h2>} />
+              <Route
+                path="*"
+                element={<h2> Nothing to see </h2>}
+              />
             </Route>
           </Routes>
         </div>

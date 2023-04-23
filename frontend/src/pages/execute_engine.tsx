@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Editor } from "../Editor";
-import { ExecuteBox } from "../component/ExecuteBox";
-import debounce from "lodash.debounce";
-import { getUrl } from "../utils/url_utils";
+import React, { useEffect, useMemo, useState } from 'react'
+import { Editor } from '../Editor'
+import { ExecuteBox } from '../component/ExecuteBox'
+import debounce from 'lodash.debounce'
+import { getUrl } from '../utils/url_utils'
 
 export function ExecuteEnginePage() {
   let code = `print('hi')`
@@ -57,12 +57,21 @@ export function ExecuteEnginePage() {
   return (
     <div className="flex h-screen">
       <div className="w-1/2">
-        <Editor code={editor_value} onChange={editorOnchange} />
+        <Editor
+          code={editor_value}
+          onChange={editorOnchange}
+        />
       </div>
       <div className="w-1/2">
-        <ExecuteBox title={'V8 result'} content={v8_output} />
+        <ExecuteBox
+          title={'V8 result'}
+          content={v8_output}
+        />
         <div className="border-b-2 border-gray-300 my-4"></div>
-        <ExecuteBox title={'Quickjs result'} content={quickjs_output} />
+        <ExecuteBox
+          title={'Quickjs result'}
+          content={quickjs_output}
+        />
       </div>
     </div>
   )

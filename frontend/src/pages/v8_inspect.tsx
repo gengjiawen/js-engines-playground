@@ -52,7 +52,10 @@ export function V8_INSPECT_PAGE() {
   return (
     <div className="flex h-screen">
       <div className="w-1/2">
-        <Editor onChange={editorOnchange} code={editor_value} />
+        <Editor
+          onChange={editorOnchange}
+          code={editor_value}
+        />
       </div>
       <div className="w-1/2">
         <label
