@@ -20,12 +20,10 @@ const fe = path.join(__dirname, 'dist')
 const serve = require('koa-static')
 app.use(serve(fe))
 
-
 root_router.get(/.*/, async (ctx) => {
-  console.log('haha')
-  ctx.type = 'html';
-  ctx.body = require('fs').createReadStream(path.join(fe, 'index.html'));
-});
+  ctx.type = 'html'
+  ctx.body = require('fs').createReadStream(path.join(fe, 'index.html'))
+})
 
 // in case of public download
 // const mount = require('koa-mount')
