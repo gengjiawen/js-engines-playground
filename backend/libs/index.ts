@@ -14,7 +14,9 @@ app.use(
   })
 )
 app.use(require('koa-compress')())
-const router = new Router()
+const router = new Router({
+  prefix: "/api"
+})
 
 const fe = path.join(__dirname, 'dist')
 const serve = require('koa-static')
