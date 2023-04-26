@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "lerna run dev --stream --parallel",
     "build": "lerna run build --stream --parallel",
+    "postbuild": "cpy 'frontend/dist/**/*.*' 'backend/build/dist' --parents",
     "format": "prettier --write \"**/*.{js,ts,tsx,css,yml}\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,6 +20,7 @@
   "license": "ISC",
   "devDependencies": {
     "lerna": "^6.5.1",
+    "cpy-cli": "^4.2.0",
     "prettier": "2.8.6"
   }
 }

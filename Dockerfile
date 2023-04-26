@@ -16,7 +16,6 @@ RUN pnpm i
 COPY ./ /app/
 RUN pnpm build
 
-RUN cp -r /app/frontend/dist/ /app/backend/build/
 ENV PATH=/root/.esvu/bin:${PATH}
 RUN which v8
 

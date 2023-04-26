@@ -14,19 +14,25 @@ app.use(
   })
 )
 app.use(require('koa-compress')())
-const router = new Router({
-  prefix: "/api"
-})
+const root_router = new Router()
 
 const fe = path.join(__dirname, 'dist')
 const serve = require('koa-static')
 app.use(serve(fe))
 
+
+root_router.get(/.*/, async (ctx) => {
+  console.log('haha')
+  ctx.type = 'html';
+  ctx.body = require('fs').createReadStream(path.join(fe, 'index.html'));
+});
+
 // in case of public download
 // const mount = require('koa-mount')
 // app.use(mount('/public', serve(fileDownloadLocation)))
 
-router.post('/v8', async (ctx: Koa.Context) => {
+const api_router = new Router()
+api_router.post('/v8', async (ctx: Koa.Context) => {
   const { js_code, flags } = ctx.request.body
   const { temporaryFile } = await import(`tempy`)
   const f = temporaryFile({ extension: '.js' })
@@ -46,7 +52,7 @@ router.post('/v8', async (ctx: Koa.Context) => {
   }
 })
 
-router.post('/quickjs', async (ctx: Koa.Context) => {
+api_router.post('/quickjs', async (ctx: Koa.Context) => {
   const { js_code } = ctx.request.body
   const { temporaryFile } = await import(`tempy`)
   const f = temporaryFile({ extension: '.js' })
@@ -65,8 +71,10 @@ router.post('/quickjs', async (ctx: Koa.Context) => {
   }
 })
 
+root_router.use('/api', api_router.routes())
+
 app.use(cors())
-app.use(router.routes()).use(router.allowedMethods())
+app.use(root_router.routes()).use(root_router.allowedMethods())
 
 const port = 8000
 app.listen(port, () => {
