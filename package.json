@@ -9,6 +9,7 @@
     "frontend"
   ],
   "scripts": {
+    "prepare": "husky install",
     "dev": "lerna run dev --stream --parallel",
     "build": "lerna run build --stream --parallel",
     "postbuild": "cpy 'frontend/dist/**/*.*' 'backend/build/dist' --parents",
@@ -19,8 +20,20 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.0",
     "lerna": "^6.5.1",
     "cpy-cli": "^4.2.0",
     "prettier": "2.8.6"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx,md,css,html,yml}": [
+      "prettier --write"
+    ]
   }
 }

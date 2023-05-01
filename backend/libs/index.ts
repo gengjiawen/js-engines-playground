@@ -32,8 +32,11 @@ root_router.get(/.*/, async (ctx) => {
 
 async function getTmpJsFile() {
   const cryptoRandomString = await import(`crypto-random-string`)
-  const f = path.join(os.tmpdir(), await cryptoRandomString.cryptoRandomStringAsync({length: 7}));
-  return f;
+  const f = path.join(
+    os.tmpdir(),
+    await cryptoRandomString.cryptoRandomStringAsync({ length: 7 })
+  )
+  return f
 }
 
 const api_router = new Router()
