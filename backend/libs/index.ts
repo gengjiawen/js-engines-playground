@@ -3,6 +3,7 @@ import * as Router from '@koa/router'
 import * as cors from '@koa/cors'
 import { koaBody } from 'koa-body'
 import * as fs from 'fs/promises'
+import * as os from 'os'
 import { execute_quickjs, execute_v8 } from './engine_utils'
 import * as path from 'path'
 
@@ -29,11 +30,16 @@ root_router.get(/.*/, async (ctx) => {
 // const mount = require('koa-mount')
 // app.use(mount('/public', serve(fileDownloadLocation)))
 
+async function getTmpJsFile() {
+  const cryptoRandomString = await import(`crypto-random-string`)
+  const f = path.join(os.tmpdir(), await cryptoRandomString.cryptoRandomStringAsync({length: 7}));
+  return f;
+}
+
 const api_router = new Router()
 api_router.post('/v8', async (ctx: Koa.Context) => {
   const { js_code, flags } = ctx.request.body
-  const { temporaryFile } = await import(`tempy`)
-  const f = temporaryFile({ extension: '.js' })
+  const f = await getTmpJsFile()
   await fs.writeFile(f, js_code)
   try {
     const r = await execute_v8(f, flags)
@@ -52,8 +58,7 @@ api_router.post('/v8', async (ctx: Koa.Context) => {
 
 api_router.post('/quickjs', async (ctx: Koa.Context) => {
   const { js_code } = ctx.request.body
-  const { temporaryFile } = await import(`tempy`)
-  const f = temporaryFile({ extension: '.js' })
+  const f = await getTmpJsFile()
   await fs.writeFile(f, js_code)
   try {
     const r = await execute_quickjs(f)
