@@ -1,6 +1,6 @@
 FROM gitpod/workspace-full:latest
 
-ENV TRIGGER_REBUILD=4
+ENV TRIGGER_REBUILD=5
 
 ENV PATH=/usr/local/bin/:/home/gitpod/.esvu/bin:$PATH
 
