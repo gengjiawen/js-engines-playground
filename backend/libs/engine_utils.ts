@@ -10,7 +10,7 @@ export async function execute_v8(
 }
 
 export async function execute_quickjs(js_file: string) {
-  let command = `quickjs ${js_file}`
+  let command = `qjs ${js_file}`
   let r = await execa.command(command, { shell: true, stdio: 'pipe' })
   return r
 }
