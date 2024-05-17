@@ -1,7 +1,7 @@
 FROM node:lts as fe
 RUN npm i -g pnpm 
 # ignore some engines install error
-RUN npm i -g esvu && yes | esvu || true
+RUN npm i -g jsvu && yes | jsvu || true
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ RUN pnpm i
 COPY ./ /app/
 RUN pnpm build
 
-ENV PATH=/root/.esvu/bin:${PATH}
+ENV PATH=/root/.jsvu/bin:${PATH}
 RUN which v8
 
 CMD ["node", "/app/backend/build/index.js"]
