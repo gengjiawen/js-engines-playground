@@ -1,1 +1,1 @@
-const version = "2024.6.24"
+const version = '2024.8.17'
