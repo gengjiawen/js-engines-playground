@@ -16170,7 +16170,9 @@ var NavierStokes = new BenchmarkSuite('NavierStokes', 1484000, [
 ])
 
 /* run_harness.js */
-var print = console.log
+if (globalThis.print === undefined) {
+  globalThis.print = console.log
+}
 
 function Run() {
   BenchmarkSuite.RunSuites({
@@ -16201,12 +16203,13 @@ function AddResult(name, result) {
 
 function AddScore(score) {
   print('SCORE', score)
+  bench_result.push({ name: 'Score', result: score })
 }
 
 try {
   bench_result = []
   Run()
-  console.log(JSON.stringify(bench_result))
+  print(`[${bench_result.map((i) => JSON.stringify(i)).join(',')}]`)
 } catch (e) {
   print('*** Run() failed')
   print(e.stack || e)

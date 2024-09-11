@@ -1,4 +1,5 @@
 const { exec } = require('child_process')
+const fs = require('fs')
 
 function parseResults(output) {
   const jsonString = output.match(/\[.*\]/)
@@ -6,14 +7,12 @@ function parseResults(output) {
 }
 
 function createMarkdownTable(results, commandNames) {
-  // Create the header row dynamically
   let table = '| Benchmark (Higher scores are better) '
   commandNames.forEach((name) => {
     table += `| ${name} Result `
   })
   table += '|\n'
 
-  // Create the separator row dynamically
   table += '|-------------------------------------'
   commandNames.forEach(() => {
     table += '|------------------'
@@ -22,14 +21,12 @@ function createMarkdownTable(results, commandNames) {
 
   const benchmarks = new Set()
 
-  // Collect all benchmark names from all results
   commandNames.forEach((name) => {
     results[name].forEach((entry) => {
       benchmarks.add(entry.name)
     })
   })
 
-  // Create table rows for each benchmark
   benchmarks.forEach((benchmark) => {
     const row = [`| ${benchmark.padEnd(36)}`]
     commandNames.forEach((name) => {
@@ -44,10 +41,35 @@ function createMarkdownTable(results, commandNames) {
   return table
 }
 
+function createCSV(results, commandNames) {
+  let csv = 'Benchmark,'
+  csv += commandNames.join(',') + '\n'
+
+  const benchmarks = new Set()
+
+  commandNames.forEach((name) => {
+    results[name].forEach((entry) => {
+      benchmarks.add(entry.name)
+    })
+  })
+
+  benchmarks.forEach((benchmark) => {
+    const row = [benchmark]
+    commandNames.forEach((name) => {
+      const result = results[name].find((entry) => entry.name === benchmark)
+      row.push(result ? result.result.toString() : 'N/A')
+    })
+    csv += `${row.join(',')}\n`
+  })
+
+  return csv
+}
+
 const commands = [
   { name: 'QuickJS', command: 'quickjs combined.js' },
   { name: 'V8 --jitless', command: 'v8 --jitless combined.js' },
   { name: 'V8', command: 'v8 combined.js' },
+  { name: 'JSC', command: 'jsc combined.js' },
   // Add more engines here
 ]
 
@@ -69,7 +91,16 @@ commands.forEach(({ name, command }, index) => {
         results,
         commands.map((cmd) => cmd.name)
       )
+      console.log('Markdown Table:')
       console.log(markdownTable)
+
+      const csvContent = createCSV(
+        results,
+        commands.map((cmd) => cmd.name)
+      )
+
+      fs.writeFileSync('benchmark_results.csv', csvContent)
+      console.log('CSV file has been saved as benchmark_results.csv')
     }
   })
 })
