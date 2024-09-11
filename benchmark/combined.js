@@ -16206,7 +16206,7 @@ function AddScore(score) {
 try {
   bench_result = []
   Run()
-  console.log(bench_result.map((item) => JSON.stringify(item)).join(','))
+  console.log(JSON.stringify(bench_result))
 } catch (e) {
   print('*** Run() failed')
   print(e.stack || e)
