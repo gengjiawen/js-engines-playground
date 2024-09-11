@@ -83,7 +83,6 @@ function createCSV(results, commandNames) {
 
 const commands = [
   { name: 'QuickJS', command: 'quickjs combined.js' },
-  { name: 'qjs-calloc', command: 'qjs-calloc combined.js' },
   { name: 'V8 --jitless', command: 'v8 --jitless combined.js' },
   { name: 'V8', command: 'v8 combined.js' },
   { name: 'JSC', command: 'jsc combined.js' },
