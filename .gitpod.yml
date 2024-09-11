@@ -4,6 +4,7 @@
 tasks:
   - init: pnpm i
     command: pnpm dev
+  - init: echo 'export PATH=/usr/local/bin:/home/gitpod/.jsvu/bin:$PATH' >> ~/.bashrc && npm i -g jsvu && yes | jsvu || true && source ~/.bashrc
 
 ports:
   - port: 3000
