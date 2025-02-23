@@ -13,7 +13,7 @@ export function QuickjsInspectPage() {
     console.log(`change finished`)
   }
 
-  let [flag_value, setFlagValue] = useState('')
+  let [flag_value, setFlagValue] = useState('-D1')
   const flagsOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newFlags = event.target.value
     setFlagValue(newFlags)
@@ -32,7 +32,7 @@ export function QuickjsInspectPage() {
       body: formdata,
     }
 
-    const url = getUrl('quickjs')
+    const url = getUrl('qjs-debug')
     console.log(url)
     fetch(url, requestOptions)
       .then((response) => response.text())

@@ -4,8 +4,17 @@ import * as cors from '@koa/cors'
 import { koaBody } from 'koa-body'
 import * as fs from 'fs/promises'
 import * as os from 'os'
-import { execute_quickjs, execute_v8, execute_jsc } from './engine_utils'
+import {
+  execute_quickjs,
+  execute_v8,
+  execute_jsc,
+  execute_quickjs_debug,
+} from './engine_utils'
 import * as path from 'path'
+
+const binaryFolder = path.join(__dirname, '..', 'binary', process.platform)
+console.log('Injecting binary folder path:', binaryFolder)
+process.env.PATH = binaryFolder + path.delimiter + process.env.PATH
 
 const app = new Koa()
 
@@ -65,6 +74,24 @@ api_router.post('/quickjs', async (ctx: Koa.Context) => {
   await fs.writeFile(f, js_code)
   try {
     const r = await execute_quickjs(f)
+    ctx.body = {
+      code: r.exitCode,
+      stdout: r.stdout,
+    }
+  } catch (e: any) {
+    ctx.body = {
+      code: 1,
+      stdout: e?.stderr ?? e.toString(),
+    }
+  }
+})
+
+api_router.post('/qjs-debug', async (ctx: Koa.Context) => {
+  const { js_code, flags } = ctx.request.body
+  const f = await getTmpJsFile()
+  await fs.writeFile(f, js_code)
+  try {
+    const r = await execute_quickjs_debug(f, flags)
     ctx.body = {
       code: r.exitCode,
       stdout: r.stdout,
