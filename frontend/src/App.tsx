@@ -4,10 +4,12 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { V8_INSPECT_PAGE } from './pages/v8_inspect'
 import { ExecuteEnginePage } from './pages/execute_engine'
+import { QuickjsInspectPage } from './pages/quickjs_inspect'
 
 let navigation = [
   { name: 'Execute Engine', href: '/', current: false },
   { name: 'V8 Dance', href: '/v8', current: false },
+  { name: 'QuickJS Inspect', href: '/quickjs', current: false },
 ]
 
 function classNames(...classes: any) {
@@ -118,6 +120,10 @@ export default function App() {
               <Route
                 path="v8"
                 element={<V8_INSPECT_PAGE />}
+              />
+              <Route
+                path="quickjs"
+                element={<QuickjsInspectPage />}
               />
 
               {/* Using path="*"" means "match anything", so this route
