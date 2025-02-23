@@ -95,6 +95,37 @@ api_router.post('/jsc', async (ctx: Koa.Context) => {
   }
 })
 
+api_router.post('/multi', async (ctx: Koa.Context) => {
+  const { js_code, flags } = ctx.request.body
+  const f = await getTmpJsFile()
+  await fs.writeFile(f, js_code)
+
+  // Execute each engine and handle errors individually
+  const v8Promise = execute_v8(f, flags)
+    .then((r) => ({ code: r.exitCode, stdout: r.stdout }))
+    .catch((e) => ({ code: 1, stdout: e?.stderr ?? e.toString() }))
+
+  const quickjsPromise = execute_quickjs(f)
+    .then((r) => ({ code: r.exitCode, stdout: r.stdout }))
+    .catch((e) => ({ code: 1, stdout: e?.stderr ?? e.toString() }))
+
+  const jscPromise = execute_jsc(f)
+    .then((r) => ({ code: r.exitCode, stdout: r.stdout }))
+    .catch((e) => ({ code: 1, stdout: e?.stderr ?? e.toString() }))
+
+  const [v8Result, quickjsResult, jscResult] = await Promise.all([
+    v8Promise,
+    quickjsPromise,
+    jscPromise,
+  ])
+
+  ctx.body = {
+    v8: v8Result,
+    quickjs: quickjsResult,
+    jsc: jscResult,
+  }
+})
+
 root_router.use('/api', api_router.routes())
 
 app.use(cors())

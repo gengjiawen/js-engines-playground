@@ -24,7 +24,7 @@ export function ExecuteEnginePage() {
       set_jsc('')
       return
     }
-    console.warn(`submmit code to server`, editor_value)
+    console.warn(`submit code to server`, editor_value)
     let formdata = new FormData()
     formdata.append('js_code', editor_value)
     formdata.append('flags', '')
@@ -34,25 +34,13 @@ export function ExecuteEnginePage() {
       body: formdata,
     }
 
-    let url = getUrl('v8')
+    let url = getUrl('multi')
     fetch(url, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        set_v8_output(result.stdout)
-      })
-      .catch((error) => console.log('error', error))
-
-    fetch(getUrl('quickjs'), requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        set_quickjs(result.stdout)
-      })
-      .catch((error) => console.log('error', error))
-
-    fetch(getUrl('jsc'), requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        set_jsc(result.stdout)
+        set_v8_output(result.v8.stdout)
+        set_quickjs(result.quickjs.stdout)
+        set_jsc(result.jsc.stdout)
       })
       .catch((error) => console.log('error', error))
   }
