@@ -5,7 +5,7 @@ tasks:
   - init: pnpm i
     command: pnpm dev
   - init: echo 'export PATH=/usr/local/bin:/home/gitpod/.jsvu/bin:$PATH' >> ~/.bashrc && npm i -g jsvu && yes | jsvu || true && source ~/.bashrc
-  - init: git clone https://github.com/quickjs-ng/quickjs.git && cd quickjs && cmake -S . -B build -DCMAKE_BUILD_TYPE=Debu && cmake --build build
+  - init: git clone https://github.com/quickjs-ng/quickjs.git && cd quickjs && cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug && cmake --build build
 
 ports:
   - port: 3000
