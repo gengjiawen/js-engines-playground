@@ -14,3 +14,9 @@ export async function execute_quickjs(js_file: string) {
   let r = await execa.command(command, { shell: true, stdio: 'pipe' })
   return r
 }
+
+export async function execute_jsc(js_file: string) {
+  let command = `jsc ${js_file}`
+  let r = await execa.command(command, { shell: true, stdio: 'pipe' })
+  return r
+}

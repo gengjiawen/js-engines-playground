@@ -16,10 +16,12 @@ export function ExecuteEnginePage() {
 
   let [v8_output, set_v8_output] = useState('')
   let [quickjs_output, set_quickjs] = useState('')
+  let [jsc_output, set_jsc] = useState('')
   const getRes = () => {
     if (editor_value.trim() == '') {
       set_v8_output('')
       set_quickjs('')
+      set_jsc('')
       return
     }
     console.warn(`submmit code to server`, editor_value)
@@ -44,6 +46,13 @@ export function ExecuteEnginePage() {
       .then((response) => response.json())
       .then((result) => {
         set_quickjs(result.stdout)
+      })
+      .catch((error) => console.log('error', error))
+
+    fetch(getUrl('jsc'), requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        set_jsc(result.stdout)
       })
       .catch((error) => console.log('error', error))
   }
@@ -71,6 +80,11 @@ export function ExecuteEnginePage() {
         <ExecuteBox
           title={'Quickjs result'}
           content={quickjs_output}
+        />
+        <div className="border-b-2 border-gray-300 my-4"></div>
+        <ExecuteBox
+          title={'JavaScriptCore (JSC) result'}
+          content={jsc_output}
         />
       </div>
     </div>
