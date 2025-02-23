@@ -8,10 +8,10 @@ export function getUrl(suffix: string) {
     return `api/${suffix}`
   }
   let url = `http://localhost:8000/api/${suffix}`
-  let location = window.location.href
+  let location = window.location.origin
   // console.log(`location`, location)
   if (location.includes('gitpod.io')) {
-    url = location.replace('3000', '8000') + 'api/' + suffix
+    url = location.replace('3000', '8000') + '/api/' + suffix
   }
   console.log(`uu`, url)
   return url
