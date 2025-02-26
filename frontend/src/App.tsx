@@ -9,7 +9,7 @@ import { QuickjsInspectPage } from './pages/quickjs_inspect'
 let navigation = [
   { name: 'Execute Engine', href: '/', current: false },
   { name: 'V8 Dance', href: '/v8', current: false },
-  { name: 'QuickJS Inspect', href: '/quickjs', current: false },
+  { name: 'QuickJS Dance', href: '/quickjs', current: false },
 ]
 
 function classNames(...classes: any) {
