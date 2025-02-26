@@ -25,8 +25,8 @@ export async function execute_quickjs_debug(
   return r
 }
 
-export async function execute_jsc(js_file: string) {
-  let command = `jsc ${js_file}`
+export async function execute_jsc(js_file: string, flags: string = '') {
+  let command = `jsc ${flags} ${js_file}`
   let r = await execa.command(command, { shell: true, stdio: 'pipe' })
   return r
 }

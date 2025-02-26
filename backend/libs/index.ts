@@ -105,11 +105,11 @@ api_router.post('/qjs-debug', async (ctx: Koa.Context) => {
 })
 
 api_router.post('/jsc', async (ctx: Koa.Context) => {
-  const { js_code } = ctx.request.body
+  const { js_code, flags } = ctx.request.body
   const f = await getTmpJsFile()
   await fs.writeFile(f, js_code)
   try {
-    const r = await execute_jsc(f)
+    const r = await execute_jsc(f, flags)
     ctx.body = {
       code: r.exitCode,
       stdout: r.stdout,

@@ -1,17 +1,42 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useCallback, useMemo, useState } from 'react'
 import debounce from 'lodash.debounce'
 import { DiffEditor } from '@monaco-editor/react'
 import { getUrl } from '../utils/url_utils'
 import { Editor } from '../Editor'
 
+// Define engine types and their default flags
+const ENGINES = {
+  v8: {
+    name: 'V8',
+    endpoint: 'v8',
+    defaultFlags: '--print-bytecode',
+  },
+  jsc: {
+    name: 'JavaScriptCore',
+    endpoint: 'jsc',
+    defaultFlags: '-d',
+  },
+  'qjs-debug': {
+    name: 'QuickJS',
+    endpoint: 'qjs-debug',
+    defaultFlags: '-D1',
+  },
+}
+
+type EngineKey = keyof typeof ENGINES
+
 export function DiffEnginePage() {
   const [jsCode, setJsCode] = useState(
     `// Enter your JavaScript code here\nconsole.log('Hello, world!');\n`
   )
-  const [v8Output, setV8Output] = useState('')
-  const [quickjsOutput, setQuickjsOutput] = useState('')
-  const [v8Flags, setV8Flags] = useState('--print-bytecode')
-  const [quickjsFlags, setQuickjsFlags] = useState('-D1')
+  const [leftEngine, setLeftEngine] = useState<EngineKey>('v8')
+  const [rightEngine, setRightEngine] = useState<EngineKey>('qjs-debug')
+  const [leftOutput, setLeftOutput] = useState('')
+  const [rightOutput, setRightOutput] = useState('')
+  const [leftFlags, setLeftFlags] = useState(ENGINES.v8.defaultFlags)
+  const [rightFlags, setRightFlags] = useState(
+    ENGINES['qjs-debug'].defaultFlags
+  )
   const [language, setLanguage] = useState('javascript')
   const [sideBySide, setSideBySide] = useState(true)
 
@@ -24,74 +49,131 @@ export function DiffEnginePage() {
     debouncedExecuteCode()
   }
 
-  const handleV8FlagsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setV8Flags(event.target.value)
-    debouncedExecuteCode()
+  const handleLeftEngineChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const engine = event.target.value as EngineKey
+    setLeftEngine(engine)
+    setLeftFlags(ENGINES[engine].defaultFlags)
+    // Force immediate execution instead of debouncing
+    setTimeout(
+      () =>
+        executeCode(
+          engine,
+          rightEngine,
+          ENGINES[engine].defaultFlags,
+          rightFlags
+        ),
+      0
+    )
   }
 
-  const handleQuickjsFlagsChange = (
+  const handleRightEngineChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const engine = event.target.value as EngineKey
+    setRightEngine(engine)
+    setRightFlags(ENGINES[engine].defaultFlags)
+    // Force immediate execution instead of debouncing
+    setTimeout(
+      () =>
+        executeCode(
+          leftEngine,
+          engine,
+          leftFlags,
+          ENGINES[engine].defaultFlags
+        ),
+      0
+    )
+  }
+
+  const handleLeftFlagsChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setQuickjsFlags(event.target.value)
+    const newFlags = event.target.value
+    setLeftFlags(newFlags)
     debouncedExecuteCode()
   }
 
-  const executeCode = () => {
-    if (jsCode.trim() === '') {
-      setV8Output('')
-      setQuickjsOutput('')
-      return
-    }
-
-    console.log(`Executing code: ${jsCode}`)
-
-    // Execute V8
-    let v8Formdata = new FormData()
-    v8Formdata.append('js_code', jsCode)
-    v8Formdata.append('flags', v8Flags)
-
-    let v8RequestOptions = {
-      method: 'POST',
-      body: v8Formdata,
-    }
-
-    let v8Url = getUrl('v8')
-    fetch(v8Url, v8RequestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-        let out = JSON.parse(result).stdout
-        setV8Output(out)
-      })
-      .catch((error) => console.log('error', error))
-
-    // Execute QuickJS
-    let qjsFormdata = new FormData()
-    qjsFormdata.append('js_code', jsCode)
-    qjsFormdata.append('flags', quickjsFlags)
-
-    let qjsRequestOptions = {
-      method: 'POST',
-      body: qjsFormdata,
-    }
-
-    let qjsUrl = getUrl('qjs-debug')
-    fetch(qjsUrl, qjsRequestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-        let out = JSON.parse(result).stdout
-        setQuickjsOutput(out)
-      })
-      .catch((error) => console.log('error', error))
+  const handleRightFlagsChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newFlags = event.target.value
+    setRightFlags(newFlags)
+    debouncedExecuteCode()
   }
 
+  const executeEngine = useCallback(
+    (
+      engine: EngineKey,
+      flags: string,
+      setOutput: React.Dispatch<React.SetStateAction<string>>
+    ) => {
+      if (jsCode.trim() === '') {
+        setOutput('')
+        return
+      }
+
+      const formdata = new FormData()
+      formdata.append('js_code', jsCode)
+      formdata.append('flags', flags)
+
+      const requestOptions = {
+        method: 'POST',
+        body: formdata,
+      }
+
+      const url = getUrl(ENGINES[engine].endpoint)
+      fetch(url, requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+          let out = JSON.parse(result).stdout
+          setOutput(out)
+        })
+        .catch((error) => {
+          console.log('error', error)
+          setOutput(`Error executing ${ENGINES[engine].name}: ${error.message}`)
+        })
+    },
+    [jsCode]
+  )
+
+  // This function accepts current engine and flag values to avoid stale closures
+  const executeCode = useCallback(
+    (
+      currentLeftEngine: EngineKey = leftEngine,
+      currentRightEngine: EngineKey = rightEngine,
+      currentLeftFlags: string = leftFlags,
+      currentRightFlags: string = rightFlags
+    ) => {
+      if (jsCode.trim() === '') {
+        setLeftOutput('')
+        setRightOutput('')
+        return
+      }
+
+      console.log(
+        `Executing code with engines: ${currentLeftEngine} vs ${currentRightEngine}`
+      )
+
+      // Execute left engine
+      executeEngine(currentLeftEngine, currentLeftFlags, setLeftOutput)
+
+      // Execute right engine
+      executeEngine(currentRightEngine, currentRightFlags, setRightOutput)
+    },
+    [executeEngine, leftEngine, rightEngine, leftFlags, rightFlags, jsCode]
+  )
+
   const debouncedExecuteCode = useMemo(
-    () => debounce(executeCode, 500),
-    [jsCode, v8Flags, quickjsFlags]
+    () => debounce(() => executeCode(), 500),
+    [executeCode]
   )
 
   useEffect(() => {
+    // Initial execution
     executeCode()
-  }, [])
+  }, [executeCode])
 
   return (
     <div className="flex flex-col h-screen">
@@ -106,39 +188,87 @@ export function DiffEnginePage() {
         />
       </div>
 
-      {/* Flags Section */}
+      {/* Engine Selection and Flags Section */}
       <div className="flex p-2 bg-white">
         <div className="w-1/2 pr-2">
+          <div className="mb-2">
+            <label
+              htmlFor="left-engine"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Left Engine
+            </label>
+            <select
+              id="left-engine"
+              name="left-engine"
+              className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+              value={leftEngine}
+              onChange={handleLeftEngineChange}
+            >
+              {Object.entries(ENGINES).map(([key, engine]) => (
+                <option
+                  key={key}
+                  value={key}
+                >
+                  {engine.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <label
-            htmlFor="v8-flags"
+            htmlFor="left-flags"
             className="block text-sm font-medium text-gray-700"
           >
-            V8 Flags
+            {ENGINES[leftEngine].name} Flags
           </label>
           <div className="mt-1">
             <input
-              id="v8-flags"
-              name="v8-flags"
+              id="left-flags"
+              name="left-flags"
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={v8Flags}
-              onChange={handleV8FlagsChange}
+              value={leftFlags}
+              onChange={handleLeftFlagsChange}
             />
           </div>
         </div>
         <div className="w-1/2 pl-2">
+          <div className="mb-2">
+            <label
+              htmlFor="right-engine"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Right Engine
+            </label>
+            <select
+              id="right-engine"
+              name="right-engine"
+              className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+              value={rightEngine}
+              onChange={handleRightEngineChange}
+            >
+              {Object.entries(ENGINES).map(([key, engine]) => (
+                <option
+                  key={key}
+                  value={key}
+                >
+                  {engine.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <label
-            htmlFor="quickjs-flags"
+            htmlFor="right-flags"
             className="block text-sm font-medium text-gray-700"
           >
-            QuickJS Flags
+            {ENGINES[rightEngine].name} Flags
           </label>
           <div className="mt-1">
             <input
-              id="quickjs-flags"
-              name="quickjs-flags"
+              id="right-flags"
+              name="right-flags"
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={quickjsFlags}
-              onChange={handleQuickjsFlagsChange}
+              value={rightFlags}
+              onChange={handleRightFlagsChange}
             />
           </div>
         </div>
@@ -149,7 +279,8 @@ export function DiffEnginePage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-lg font-medium text-gray-700">
-              Engine Diff Editor
+              Engine Diff Editor: {ENGINES[leftEngine].name} vs{' '}
+              {ENGINES[rightEngine].name}
             </h1>
           </div>
           <div className="flex items-center space-x-4">
@@ -187,8 +318,8 @@ export function DiffEnginePage() {
         <DiffEditor
           height="100%"
           language={language}
-          original={v8Output}
-          modified={quickjsOutput}
+          original={leftOutput}
+          modified={rightOutput}
           options={{
             renderSideBySide: sideBySide,
             originalEditable: false,
