@@ -82,7 +82,8 @@ function createCSV(results, commandNames) {
 }
 
 const commands = [
-  { name: 'QuickJS', command: 'quickjs combined.js' },
+  { name: 'QuickJS', command: 'qjs combined.js' },
+  { name: 'QuickJS Bellard', command: 'qjs_bellard combined.js' },
   { name: 'V8 --jitless', command: 'v8 --jitless combined.js' },
   { name: 'V8', command: 'v8 combined.js' },
   { name: 'JSC', command: 'jsc combined.js' },
@@ -92,15 +93,16 @@ const commands = [
 const results = {}
 
 commands.forEach(({ name, command }, index) => {
-  exec(command, (error, stdout, stderr) => {
+  console.log(`Starting ${name}...`)
+  exec(command, { timeout: 300000 }, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing ${name}: ${error.message}`)
-      return
+      results[name] = []
+    } else {
+      const r = parseResults(stdout)
+      console.log(name, r)
+      results[name] = r
     }
-
-    const r = parseResults(stdout)
-    console.log(name, r)
-    results[name] = r
 
     if (Object.keys(results).length === commands.length) {
       const markdownTable = createMarkdownTable(

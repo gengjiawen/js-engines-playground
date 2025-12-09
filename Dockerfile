@@ -17,6 +17,7 @@ COPY ./ /app/
 RUN pnpm build
 
 ENV PATH=/root/.jsvu/bin:${PATH}
+RUN pnpx @gengjiawen/unzip-url "https://bellard.org/quickjs/binary_releases/quickjs-linux-x86_64-2025-09-13.zip" /tmp && mv /tmp/qjs ~/.jsvu/bin/qjs_bellard
 RUN which v8
 
 CMD ["node", "/app/backend/build/index.js"]
