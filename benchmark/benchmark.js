@@ -1,5 +1,8 @@
 const { exec } = require('child_process')
 const fs = require('fs')
+const util = require('util')
+
+const execAsync = util.promisify(exec)
 
 function parseResults(output) {
   const jsonString = output.match(/\[.*\]/)
@@ -90,35 +93,77 @@ const commands = [
   // Add more engines here
 ]
 
-const results = {}
-
-commands.forEach(({ name, command }, index) => {
+// Run a single engine once and return parsed results
+async function runOnce(name, command) {
   console.log(`Starting ${name}...`)
-  exec(command, { timeout: 300000 }, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error executing ${name}: ${error.message}`)
-      results[name] = []
-    } else {
-      const r = parseResults(stdout)
-      console.log(name, r)
-      results[name] = r
-    }
+  try {
+    const { stdout } = await execAsync(command, { timeout: 300000 })
+    const r = parseResults(stdout)
+    console.log(name, r)
+    return r
+  } catch (error) {
+    console.error(`Error executing ${name}: ${error.message}`)
+    return []
+  }
+}
 
-    if (Object.keys(results).length === commands.length) {
-      const markdownTable = createMarkdownTable(
-        results,
-        commands.map((cmd) => cmd.name)
-      )
-      console.log('Markdown Table:')
-      console.log(markdownTable)
+// Run one engine multiple times sequentially and average results per benchmark
+async function runMultipleAndAggregate(name, command, times) {
+  /** @type {Array<Array<{name: string, result: number}>>} */
+  const allRuns = []
 
-      const csvContent = createCSV(
-        results,
-        commands.map((cmd) => cmd.name)
-      )
+  for (let i = 0; i < times; i++) {
+    console.log(`Run ${i + 1} / ${times} for ${name}...`)
+    const runResult = await runOnce(name, command)
+    allRuns.push(runResult)
+  }
 
-      fs.writeFileSync('benchmark_results.csv', csvContent)
-      console.log('CSV file has been saved as benchmark_results.csv')
-    }
+  const aggregateMap = new Map()
+
+  allRuns.forEach((run) => {
+    run.forEach((entry) => {
+      const key = entry.name
+      const value = Number(entry.result)
+      if (Number.isNaN(value)) {
+        return
+      }
+      if (!aggregateMap.has(key)) {
+        aggregateMap.set(key, { name: key, total: 0, count: 0 })
+      }
+      const agg = aggregateMap.get(key)
+      agg.total += value
+      agg.count += 1
+    })
   })
+
+  return Array.from(aggregateMap.values()).map((agg) => ({
+    name: agg.name,
+    result: agg.count > 0 ? Math.round(agg.total / agg.count) : 0,
+  }))
+}
+
+async function main() {
+  const results = {}
+  const repeatTimes = 3
+
+  for (const { name, command } of commands) {
+    const aggregated = await runMultipleAndAggregate(name, command, repeatTimes)
+    results[name] = aggregated
+  }
+
+  const engineNames = commands.map((cmd) => cmd.name)
+
+  const markdownTable = createMarkdownTable(results, engineNames)
+  console.log('Markdown Table:')
+  console.log(markdownTable)
+
+  const csvContent = createCSV(results, engineNames)
+
+  fs.writeFileSync('benchmark_results.csv', csvContent)
+  console.log('CSV file has been saved as benchmark_results.csv')
+}
+
+main().catch((err) => {
+  console.error('Benchmark runner failed:', err)
+  process.exitCode = 1
 })
