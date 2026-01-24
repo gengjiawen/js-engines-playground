@@ -7,7 +7,7 @@
     "prepare": "husky install",
     "dev": "next dev -p 8000",
     "build": "next build",
-    "vercel-build": "bash -lc \"npm i -g jsvu && yes | jsvu || true; rm -rf .jsvu; mkdir -p .jsvu; cp -R ~/.jsvu/. .jsvu/ || true; next build\"",
+    "vercel-build": "bash -lc \"npm i -g jsvu && JSVU_ENGINES=v8,jsc,quickjs yes | jsvu || true; rm -rf .jsvu; mkdir -p .jsvu; cp -R ~/.jsvu/. .jsvu/ || true; next build\"",
     "start": "next start -p 8000",
     "format": "prettier --write \"**/*.{js,ts,tsx,css,yml,md}\"",
     "test": "echo \"No tests yet\" && exit 0"
