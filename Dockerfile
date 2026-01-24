@@ -12,6 +12,7 @@ ENV HUSKY=0
 RUN pnpm i --no-frozen-lockfile
 
 COPY ./ /app/
+RUN mkdir -p /app/public
 RUN pnpm build
 
 # Ensure `qjs` exists in PATH (some environments don't install it via jsvu).
