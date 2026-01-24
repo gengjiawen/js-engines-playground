@@ -7,6 +7,9 @@ const __dirname = path.dirname(__filename)
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  outputFileTracingIncludes: {
+    '*': ['.jsvu/**/*'],
+  },
   turbopack: {
     // Avoid Turbopack walking up to a random lockfile outside this repo.
     root: __dirname,
