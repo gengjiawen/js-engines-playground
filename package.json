@@ -1,30 +1,45 @@
 {
-  "name": "js-engines",
+  "name": "js-engines-playground",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "private": true,
-  "workspaces": [
-    "backend",
-    "frontend"
-  ],
   "scripts": {
     "prepare": "husky install",
-    "dev": "lerna run dev --stream --parallel",
-    "build": "lerna run build --stream --parallel",
-    "postbuild": "cpy 'frontend/dist/**/*.*' 'backend/build/dist' --parents",
-    "format": "prettier --write \"**/*.{js,ts,tsx,css,yml}\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev -p 8000",
+    "build": "next build",
+    "start": "next start -p 8000",
+    "format": "prettier --write \"**/*.{js,ts,tsx,css,yml,md}\"",
+    "test": "echo \"No tests yet\" && exit 0"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "@codemirror/lang-javascript": "^6.0.1",
+    "@headlessui/react": "1.7.13",
+    "@heroicons/react": "2.0.16",
+    "@monaco-editor/react": "4.7.0",
+    "@replit/codemirror-vim": "^6.0.1",
+    "@tailwindcss/forms": "0.5.3",
+    "@uiw/react-codemirror": "^4.11.4",
+    "autoprefixer": "10.4.13",
+    "execa": "5.1.1",
+    "lodash.debounce": "^4.0.8",
+    "next": "^16.1.4",
+    "postcss": "8.4.31",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "tailwindcss": "3.2.7"
+  },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.7",
+    "@types/node": "20.10.4",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.0",
-    "lerna": "^6.5.1",
-    "cpy-cli": "^4.2.0",
-    "prettier": "2.8.6"
+    "prettier": "3.1.1",
+    "typescript": "5.1.6"
   },
   "husky": {
     "hooks": {

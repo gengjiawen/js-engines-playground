@@ -29,7 +29,7 @@ pnpm i
 pnpm dev
 ```
 
-Frontend default port is http://localhost:3000
+App (Next.js) default port is http://localhost:8000
 
 ## Deploy
 
