@@ -7,7 +7,6 @@ RUN npm i -g jsvu && yes | jsvu || true
 WORKDIR /app
 
 COPY package.json /app/
-COPY .npmrc /app/
 COPY pnpm-lock.yaml /app/
 ENV HUSKY=0
 RUN pnpm i --no-frozen-lockfile

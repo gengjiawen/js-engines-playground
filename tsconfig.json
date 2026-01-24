@@ -41,8 +41,6 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "backend",
-    "frontend"
+    "node_modules"
   ]
 }
