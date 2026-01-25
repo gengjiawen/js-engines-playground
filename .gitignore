@@ -28,4 +28,5 @@ next-env.d.ts
 *.sw?
 *.csv
 
-quickjs/
+/quickjs/
+/benchmark/quickjs/
