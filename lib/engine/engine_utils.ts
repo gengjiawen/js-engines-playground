@@ -1,17 +1,32 @@
 import * as execa from 'execa'
+import fs from 'fs'
+import os from 'os'
 import path from 'path'
 
+let cachedEnv: NodeJS.ProcessEnv | null = null
+
 function getEngineEnv() {
-  if (!process.env.VERCEL) return process.env
+  if (cachedEnv) return cachedEnv
   const existing = process.env.PATH ?? ''
-  const jsvuBin = path.join(process.cwd(), '.jsvu', 'bin')
-  if (existing.split(path.delimiter).includes(jsvuBin)) {
-    return process.env
-  }
-  return {
-    ...process.env,
-    PATH: [jsvuBin, existing].join(path.delimiter),
-  }
+  const parts = existing.split(path.delimiter)
+  const candidates = [
+    process.env.JSVU_BIN_DIR,
+    path.join(process.cwd(), '.jsvu', 'bin'),
+    path.join(os.homedir(), '.jsvu', 'bin'),
+  ].filter((candidate): candidate is string => Boolean(candidate))
+
+  const toPrepend = candidates.filter(
+    (candidate) => fs.existsSync(candidate) && !parts.includes(candidate)
+  )
+
+  cachedEnv =
+    toPrepend.length === 0
+      ? process.env
+      : {
+          ...process.env,
+          PATH: [...toPrepend, existing].join(path.delimiter),
+        }
+  return cachedEnv
 }
 
 export async function execute_v8(
