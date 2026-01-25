@@ -7,7 +7,7 @@ import { getUrl } from '@/lib/getUrl'
 
 export default function V8InspectPage() {
   const [jsCode, setJsCode] = useState(
-    `function add(a, b) { \n return a + b; \n}\n`
+    `console.log('V8 version:', this.version());\n\nfunction add(a, b) { \n return a + b; \n}\n`
   )
   const [flags, setFlags] = useState('--print-bytecode')
   const [compilerOut, setCompilerOut] = useState('')
