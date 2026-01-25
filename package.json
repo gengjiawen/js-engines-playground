@@ -22,7 +22,7 @@
     "@monaco-editor/react": "4.7.0",
     "@replit/codemirror-vim": "^6.0.1",
     "@tailwindcss/forms": "0.5.11",
-    "@uiw/react-codemirror": "^4.11.4",
+    "@uiw/react-codemirror": "^4.25.4",
     "execa": "5.1.1",
     "lodash.debounce": "^4.0.8",
     "next": "^16.1.4",
