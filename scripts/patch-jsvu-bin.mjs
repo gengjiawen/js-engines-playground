@@ -22,6 +22,16 @@ function writeWrapper(name, engine, binary, extraArgs = []) {
 
   fs.mkdirSync(binDir, { recursive: true })
   const outPath = path.join(binDir, name)
+  try {
+    const stat = fs.lstatSync(outPath)
+    if (stat.isFile() || stat.isSymbolicLink()) {
+      fs.unlinkSync(outPath)
+    }
+  } catch (error) {
+    if (error?.code !== 'ENOENT') {
+      console.warn(`Failed to clean ${outPath}:`, error)
+    }
+  }
   fs.writeFileSync(outPath, script, { mode: 0o755 })
   return true
 }
