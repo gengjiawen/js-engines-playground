@@ -6,6 +6,8 @@
 
 ## Playground
 
+**Live (Vercel):** [https://js-engines-playground.vercel.app/](https://js-engines-playground.vercel.app/)
+
 Not guarenteed online all the time
 
 http://k2.gengjiawen.com:8001/
