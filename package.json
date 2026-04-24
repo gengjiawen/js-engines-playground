@@ -30,7 +30,7 @@
     "react-dom": "19.2.5"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.18",
+    "@tailwindcss/postcss": "^4.2.4",
     "@types/lodash.debounce": "^4.0.7",
     "@types/node": "20.10.4",
     "@types/react": "^19.2.14",
@@ -40,8 +40,8 @@
     "lint-staged": "^16.4.0",
     "postcss": "8.5.6",
     "prettier": "3.1.1",
-    "tailwindcss": "4.1.18",
-    "typescript": "5.1.6"
+    "tailwindcss": "4.2.4",
+    "typescript": "6.0.3"
   },
   "husky": {
     "hooks": {
