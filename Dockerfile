@@ -1,6 +1,6 @@
 FROM node:lts as builder
 
-RUN npm i -g pnpm
+RUN npm i -g pnpm@9
 # ignore some engines install error
 RUN npm i -g jsvu && yes | jsvu || true
 
