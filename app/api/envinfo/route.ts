@@ -5,6 +5,9 @@ const envinfo = require('envinfo') as {
     config: Record<string, unknown>,
     options?: Record<string, unknown>
   ) => Promise<string>
+  helpers: {
+    getGLibcInfo: () => Promise<[string, string?, string?]>
+  }
 }
 
 export const runtime = 'nodejs'
@@ -13,13 +16,12 @@ export const dynamic = 'force-dynamic'
 type EnvinfoResponse = {
   generatedAt: string
   deploymentEnv: Record<string, string | null>
-  process: {
-    platform: NodeJS.Platform
-    arch: string
-    node: string
-    versions: NodeJS.ProcessVersions
-  }
   envinfo: unknown
+}
+
+type EnvinfoReport = {
+  System?: Record<string, unknown>
+  [key: string]: unknown
 }
 
 let cachedReport: Promise<EnvinfoResponse> | null = null
@@ -37,30 +39,40 @@ function getSafeDeploymentEnv() {
 }
 
 async function getEnvinfoReport(): Promise<EnvinfoResponse> {
-  const report = await envinfo.run(
-    {
-      System: ['OS', 'CPU', 'Memory', 'Shell'],
-      Binaries: ['Node', 'npm', 'pnpm', 'Yarn', 'bun'],
-      Utilities: ['Git'],
-      Languages: ['Bash'],
-      npmPackages: ['next', 'react', 'react-dom', 'envinfo'],
-    },
-    {
-      json: true,
-      showNotFound: true,
+  const [report, glibcInfo] = await Promise.all([
+    envinfo.run(
+      {
+        System: ['OS', 'CPU', 'Memory', 'Shell'],
+        Binaries: ['Node', 'npm', 'pnpm', 'Yarn', 'bun'],
+        Utilities: ['Git'],
+        Languages: ['Bash'],
+      },
+      {
+        json: true,
+        showNotFound: false,
+      }
+    ),
+    envinfo.helpers.getGLibcInfo().catch(() => null),
+  ])
+
+  const parsedReport = JSON.parse(report) as EnvinfoReport
+
+  if (glibcInfo?.[1]) {
+    parsedReport.System = {
+      ...parsedReport.System,
+      [glibcInfo[0]]: glibcInfo[2]
+        ? {
+            version: glibcInfo[1],
+            path: glibcInfo[2],
+          }
+        : glibcInfo[1],
     }
-  )
+  }
 
   return {
     generatedAt: new Date().toISOString(),
     deploymentEnv: getSafeDeploymentEnv(),
-    process: {
-      platform: process.platform,
-      arch: process.arch,
-      node: process.version,
-      versions: process.versions,
-    },
-    envinfo: JSON.parse(report),
+    envinfo: parsedReport,
   }
 }
 
