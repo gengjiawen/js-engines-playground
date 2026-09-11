@@ -6,7 +6,10 @@ const __dirname = path.dirname(__filename)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // Vercel's adapter packages the build itself, and on Next 16.3 `standalone`
+  // makes its onBuildComplete step fail on a missing next-server.js.nft.json.
+  // The Dockerfile still needs standalone, so only opt out on Vercel.
+  output: process.env.VERCEL ? undefined : 'standalone',
   outputFileTracingIncludes: {
     '*': ['.jsvu/**/*'],
   },
