@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { ensureEnginePath } from '@/lib/engine/ensureEnginePath'
 import { execute_jsc } from '@/lib/engine/engine_utils'
+import { engineErrorOutput, engineOutput } from '@/lib/engine/engineOutput'
 import { safeUnlink, writeTmpJsFile } from '@/lib/engine/tmpJsFile'
 
 export const runtime = 'nodejs'
@@ -15,13 +16,13 @@ export async function POST(request: Request) {
   const f = await writeTmpJsFile(js_code)
   try {
     const r = await execute_jsc(f, flags)
+    // `-d` dumps to stderr, so stdout alone leaves the diff page blank.
     return NextResponse.json({
       code: r.exitCode,
-      stdout: r.stdout,
+      stdout: engineOutput(r),
     })
   } catch (e: any) {
-    const out = e?.stderr ?? e?.toString?.() ?? String(e)
-    return NextResponse.json({ code: 1, stdout: out })
+    return NextResponse.json({ code: 1, stdout: engineErrorOutput(e) })
   } finally {
     await safeUnlink(f)
   }

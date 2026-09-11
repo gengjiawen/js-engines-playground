@@ -62,8 +62,21 @@ export async function execute_quickjs_debug(
   })
 }
 
+// JavaScriptCore's shell has no `console` — only `print` and `printErr` — so a
+// snippet as ordinary as `console.log('hi')` dies with "undefined is not an
+// object" before printing anything. d8 and qjs stringify console.log arguments
+// exactly the way print does (`[object Object]`, comma-joined arrays), so
+// aliasing the two makes all three engines agree byte for byte.
+//
+// It goes in via `-e` rather than a prelude file so the user's script stays the
+// only source file and line numbers in stack traces still point at their code.
+const JSC_CONSOLE_SHIM =
+  'globalThis.console||(globalThis.console={log:print,info:print,debug:print,trace:print,warn:printErr,error:printErr});'
+
 export async function execute_jsc(jsFile: string, flags: string = '') {
-  const command = `jsc ${flags} ${jsFile}`.trim()
+  const command = ['jsc', flags, '-e', `'${JSC_CONSOLE_SHIM}'`, jsFile]
+    .filter(Boolean)
+    .join(' ')
   return await execa.command(command, {
     shell: true,
     stdio: 'pipe',
