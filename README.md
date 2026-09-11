@@ -8,10 +8,6 @@
 
 **Live (Vercel):** [https://js-engines-playground.vercel.app/](https://js-engines-playground.vercel.app/)
 
-Not guarenteed online all the time
-
-http://k2.gengjiawen.com:8001/
-
 ## Pre-request
 
 You need v8 in your path, you can do similar like
