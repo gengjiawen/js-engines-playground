@@ -33,7 +33,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/lodash.debounce": "^4.0.7",
-    "@types/node": "20.10.4",
+    "@types/node": "26.5.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "autoprefixer": "10.5.5",
