@@ -1,3 +1,28 @@
+## rebuilding qjs-debug
+
+`binary/linux/qjs-debug` is a custom quickjs-ng build — upstream's release
+binaries are compiled with `NDEBUG`, which strips the `-D` bytecode dumps the
+`/quickjs` and `/diff` pages rely on.
+
+It must be **statically linked**. Vercel's Node runtime is Amazon Linux 2023
+(glibc 2.34), so a binary built against a newer glibc dies at startup with
+`version 'GLIBC_2.35' not found`.
+
+```sh
+docker run --name qjsbuild alpine:3.21 sh -c '
+  apk add --no-cache build-base cmake ninja git
+  git clone --depth 1 --branch v0.16.2 https://github.com/quickjs-ng/quickjs.git /src
+  cd /src
+  cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+    -DQJS_BUILD_CLI_STATIC=ON -DCMAKE_C_FLAGS="-DENABLE_DUMPS"
+  cmake --build build --target qjs
+'
+docker cp qjsbuild:/src/build/qjs binary/linux/qjs-debug
+docker rm qjsbuild
+```
+
+`ldd binary/linux/qjs-debug` should report `not a dynamic executable`.
+
 ## get function name
 
 ````c
